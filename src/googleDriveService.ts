@@ -20,14 +20,17 @@ export default class GoogleDriveService {
 		return jwtClient;
 	}
 
-	public async uploadFile(filePath: string) {
-		const fileName = path.basename(filePath);
-		const auth = await this.authorize();
-
-		const drive = google.drive({
+  private async getDriveClient() {
+    const auth = await this.authorize();
+    return google.drive({
 			version: 'v3',
 			auth,
 		});
+  }
+
+	public async uploadFile(filePath: string) {
+		const fileName = path.basename(filePath);
+    const drive = await this.getDriveClient();
 
 		const fileMetadata = {
 			name: fileName,
@@ -39,12 +42,27 @@ export default class GoogleDriveService {
 			body: fs.createReadStream(filePath),
 		};
 
-		const file = await drive.files.create({
+		return await drive.files.create({
 			requestBody: fileMetadata,
 			media,
 			fields: 'id',
 		});
-
-		return file.data.id;
 	}
+
+  public async generateDownloadLink(fileId: string) {
+    const drive = await this.getDriveClient();
+
+    await drive.permissions.create({
+			fileId: fileId!,
+			requestBody: {
+				role: 'reader',
+				type: 'anyone',
+			},
+		});
+
+    return await drive.files.get({
+			fileId: fileId!,
+			fields: 'webViewLink, webContentLink',
+		});
+  }
 }

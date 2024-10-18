@@ -15,15 +15,18 @@ async function getFilePath() {
 }
 
 async function handleFileUpload() {
-  const googleDriveService = new GoogleDriveService();
+  const g = new GoogleDriveService();
+	const s = spinner();
   const filePath = await getFilePath();
 
-	const s = spinner();
 	s.start('Uploading file to Google Drive...');
 
 	try {
-		const fileID = await googleDriveService.uploadFile(filePath as string);
-		s.stop(`File successfully uploaded! -- ID: ${fileID}`);
+		const file = await g.uploadFile(filePath as string);
+		const downloadResponse = await g.generateDownloadLink(file.data.id as string);
+		const downloadLink = downloadResponse.data.webContentLink;
+		s.stop(`File successfully uploaded!`);
+		s.stop(`Download link: ${downloadLink}`);
 	} catch (error) {
 		s.stop('File upload failed');
 		console.error('Error uploading file:', error);

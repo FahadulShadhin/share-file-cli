@@ -13,6 +13,7 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@types/node": "^22.7.6",
+		"@types/prompts": "^2.4.9",
 		"nodemon": "^3.1.7",
 		"prettier": "^3.3.3",
 		"rimraf": "^6.0.1",
@@ -22,6 +23,7 @@
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
 		"dotenv": "^16.4.5",
-		"googleapis": "^144.0.0"
+		"googleapis": "^144.0.0",
+		"prompts": "^2.4.2"
 	}
 }

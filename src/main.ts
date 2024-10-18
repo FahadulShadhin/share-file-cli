@@ -1,6 +1,17 @@
 import * as fs from 'fs';
 import { intro, outro, text, spinner, select, note } from '@clack/prompts';
 import GoogleDriveService from './googleDriveService';
+import prompts from 'prompts';
+
+async function askPassword() {
+  const response = await prompts({
+    type: 'invisible',
+    name: 'passcode',
+    message: 'Enter your passcode to get download link',
+    mask: '*',
+  });
+  return response.passcode;
+}
 
 async function getFilePath() {
   const filePath = await text({
@@ -35,6 +46,11 @@ async function handleFileUpload() {
   }
 }
 
+async function handleFileDownload() {
+  const enteredPasscode = await askPassword();
+	note(`${enteredPasscode as string}`, 'Passcode')
+}
+
 (async () => {
   intro('Choose an option:');
 
@@ -48,7 +64,7 @@ async function handleFileUpload() {
 
   const actionMap = {
     upload: handleFileUpload,
-    download: () => note('Coming soon!', 'info'),
+    download: handleFileDownload,
   };
 
   await actionMap[action]?.();

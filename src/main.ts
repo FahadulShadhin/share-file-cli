@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { intro, outro, text, spinner, select, note } from '@clack/prompts';
-import { uploadFile } from './google/uploader';
+import GoogleDriveService from './googleDriveService';
 
 async function getFilePath() {
 	const filePath = await text({
@@ -15,13 +15,14 @@ async function getFilePath() {
 }
 
 async function handleFileUpload() {
+  const googleDriveService = new GoogleDriveService();
   const filePath = await getFilePath();
 
 	const s = spinner();
 	s.start('Uploading file to Google Drive...');
 
 	try {
-		const fileID = await uploadFile(filePath as string);
+		const fileID = await googleDriveService.uploadFile(filePath as string);
 		s.stop(`File successfully uploaded! -- ID: ${fileID}`);
 	} catch (error) {
 		s.stop('File upload failed');

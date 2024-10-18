@@ -19,7 +19,7 @@ export default class GoogleDriveService {
     return jwtClient;
   }
 
-  private async getDriveClient() {
+  private async getDriveInstance() {
     const auth = await this.authorize();
     return google.drive({
       version: 'v3',
@@ -27,13 +27,24 @@ export default class GoogleDriveService {
     });
   }
 
+  public async getFileMetadata(fileId: string) {
+    const drive = await this.getDriveInstance();
+    const response = await drive.files.get({
+      fileId,
+      fields: 'name',
+    });
+    return response.data.name;
+  }
+
   public async uploadFile(filePath: string) {
     const fileName = path.basename(filePath);
-    const drive = await this.getDriveClient();
+    const drive = await this.getDriveInstance();
+
+    if (!google_drive_parent_id) throw new Error('No parent folder was given!');
 
     const fileMetadata = {
       name: fileName,
-      parents: [google_drive_parent_id!],
+      parents: [google_drive_parent_id],
     };
 
     const media = {
@@ -49,7 +60,7 @@ export default class GoogleDriveService {
   }
 
   public async generateDownloadLink(fileId: string) {
-    const drive = await this.getDriveClient();
+    const drive = await this.getDriveInstance();
 
     await drive.permissions.create({
       fileId: fileId!,
@@ -62,6 +73,29 @@ export default class GoogleDriveService {
     return await drive.files.get({
       fileId: fileId!,
       fields: 'webViewLink, webContentLink',
+    });
+  }
+
+  public async downloadFile(fileId: string, destinationPath: string) {
+    const drive = await this.getDriveInstance();
+    const destination = fs.createWriteStream(destinationPath);
+
+    const res = await drive.files.get(
+      { fileId: fileId, alt: 'media' },
+      { responseType: 'stream' }
+    );
+
+    return new Promise<void>((resolve, reject) => {
+      res.data
+        .on('end', () => {
+          console.log('File downloaded successfully.');
+          resolve();
+        })
+        .on('error', (err: any) => {
+          console.error('Error downloading the file:', err);
+          reject(err);
+        })
+        .pipe(destination);
     });
   }
 }

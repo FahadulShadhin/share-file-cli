@@ -2,12 +2,17 @@ import * as fs from 'fs';
 import { intro, outro, text, spinner, select, note } from '@clack/prompts';
 import GoogleDriveService from './googleDriveService';
 import prompts from 'prompts';
+import os from 'os';
+import path from 'path';
+import { fileId } from './variables';
 
 export default class Cli {
   private googleDriveService: GoogleDriveService;
+  private s: ReturnType<typeof spinner>;
 
   constructor() {
     this.googleDriveService = new GoogleDriveService();
+    this.s = spinner();
   }
 
   private async askPassword() {
@@ -32,9 +37,8 @@ export default class Cli {
   }
 
   private async handleFileUpload() {
-    const s = spinner();
     const filePath = await this.getFilePath();
-    s.start('Uploading file to Google Drive...');
+    this.s.start('Uploading file to Google Drive...');
 
     try {
       const file = await this.googleDriveService.uploadFile(filePath as string);
@@ -43,17 +47,34 @@ export default class Cli {
           file.data.id as string
         );
       const downloadLink = downloadResponse.data.webContentLink;
-      s.stop(`File successfully uploaded!`);
-      s.stop(`Download link: ${downloadLink}`);
+      this.s.stop(`File successfully uploaded!`);
+      this.s.stop(`Download link: ${downloadLink}`);
     } catch (error) {
-      s.stop('File upload failed');
+      this.s.stop('File upload failed!');
       console.error('Error uploading file:', error);
     }
   }
 
   private async handleFileDownload() {
     const enteredPasscode = await this.askPassword();
-    note(`${enteredPasscode as string}`, 'Passcode');
+
+    if (!fileId) throw new Error('No file id found!');
+
+    this.s.start('Downloading...');
+
+    try {
+      const fileName = await this.googleDriveService.getFileMetadata(fileId);
+      if (!fileName) throw new Error('Could not retrieve the file name.');
+
+      const downloadsFolder = path.join(os.homedir(), 'Downloads');
+      const destinationPath = path.join(downloadsFolder, fileName);
+
+      await this.googleDriveService.downloadFile(fileId, destinationPath);
+      this.s.stop(`File downloaded to: ${destinationPath}`);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      note('Failed to download file', 'error');
+    }
   }
 
   public async run() {

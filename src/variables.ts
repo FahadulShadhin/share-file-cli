@@ -8,8 +8,8 @@ export const google_type = process.env.GOOGLE_TYPE;
 export const google_project_id = process.env.GOOGLE_PROJECT_ID;
 export const google_private_key_id = process.env.GOOGLE_PRIVATE_KEY_ID;
 export const google_private_key = process.env.GOOGLE_PRIVATE_KEY!.replace(
-	/\\n/g,
-	'\n'
+  /\\n/g,
+  '\n'
 );
 export const google_client_email = process.env.GOOGLE_CLIENT_EMAIL;
 export const google_client_id = process.env.GOOGLE_CLIENT_ID;

@@ -49,7 +49,8 @@ export default class Cli {
   }
 
   private async handleFileUpload() {
-    const { filePath, passcode, sharedKey } = await this.getFilePathAndPassCode();
+    const { filePath, passcode, sharedKey } =
+      await this.getFilePathAndPassCode();
     const hashedPassCode = await this.bcrypt.hashPasscode(passcode);
 
     this.s.start('Processing file...');
@@ -57,7 +58,11 @@ export default class Cli {
     try {
       const file = await this.googleDriveService.uploadFile(filePath as string);
       const fileId = file.data.id as string;
-      const newSecureFile = await this.db.createSecureFile(hashedPassCode, sharedKey, fileId);
+      const newSecureFile = await this.db.createSecureFile(
+        hashedPassCode,
+        sharedKey,
+        fileId
+      );
       this.s.stop(`File successfully uploaded!`);
 
       note(
@@ -90,24 +95,16 @@ export default class Cli {
       return;
     }
 
-    const validatePassCode = await this.bcrypt.comparePasscode(enteredPasscode, file?.hashedPassCode);
-    
-    // let matchedFile = undefined;
-
-    // for (const file of files) {
-    //   const isMatch = await this.bcrypt.comparePasscode(enteredPasscode, file.hashedPassCode);
-
-    //   if (isMatch) {
-    //     matchedFile = file;
-    //     break;
-    //   }
-    // }
+    const validatePassCode = await this.bcrypt.comparePasscode(
+      enteredPasscode,
+      file?.hashedPassCode
+    );
 
     if (!validatePassCode) {
       this.s.stop('Wrong passcode!');
       return;
     }
-    
+
     this.s.stop('Success!');
     const fileId = file?.fileId;
 

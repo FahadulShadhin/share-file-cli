@@ -18,15 +18,12 @@ export default class BCrypt {
     }
   }
 
-  async comparePasscode(
-    passcode: string,
-    hashedPasscode: string
-  ) {
+  async comparePasscode(passcode: string, hashedPasscode: string) {
     try {
       const match = await bcrypt.compare(passcode, hashedPasscode);
       return match;
     } catch (error) {
-      console.log('Error while verifying passcode:', error)
+      console.log('Error while verifying passcode:', error);
       throw new Error('Error while verifying passcode');
     }
   }

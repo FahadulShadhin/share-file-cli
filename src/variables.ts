@@ -16,3 +16,4 @@ export const google_client_id = process.env.GOOGLE_CLIENT_ID;
 export const google_auth_uri = process.env.GOOGLE_AUTH_URI;
 export const google_token_uri = process.env.GOOGLE_TOKEN_URI;
 export const google_drive_parent_id = process.env.GOOGLE_DRIVE_PARENT_ID;
+export const salt = Number(process.env.SALT) || 10;

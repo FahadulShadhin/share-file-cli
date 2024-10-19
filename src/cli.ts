@@ -4,28 +4,33 @@ import GoogleDriveService from './googleDriveService';
 import prompts from 'prompts';
 import os from 'os';
 import path from 'path';
-import { fileId } from './variables';
+import DBService from './dbService';
+import BCrypt from './bcrypt';
 
 export default class Cli {
   private googleDriveService: GoogleDriveService;
   private s: ReturnType<typeof spinner>;
+  private db: DBService;
+  private bcrypt: BCrypt;
 
   constructor() {
     this.googleDriveService = new GoogleDriveService();
     this.s = spinner();
+    this.db = new DBService();
+    this.bcrypt = new BCrypt();
   }
 
-  private async askPassword() {
+  private async askPassword(message: string) {
     const response = await prompts({
       type: 'invisible',
       name: 'passcode',
-      message: 'Enter your passcode to get download link',
+      message,
       mask: '*',
     });
     return response.passcode;
   }
 
-  private async getFilePath() {
+  private async getFilePathAndPassCode() {
     const filePath = await text({
       message: 'Please enter the file path:',
       validate: (value) => {
@@ -33,22 +38,23 @@ export default class Cli {
         if (!fs.existsSync(value)) return 'File does not exist';
       },
     });
-    return filePath;
+
+    const passcode = await this.askPassword('Set a passcode');
+
+    return { filePath, passcode };
   }
 
   private async handleFileUpload() {
-    const filePath = await this.getFilePath();
-    this.s.start('Uploading file to Google Drive...');
+    const { filePath, passcode } = await this.getFilePathAndPassCode();
+    const hashedPassCode = await this.bcrypt.hashPasscode(passcode);
+
+    this.s.start('Processing file...');
 
     try {
       const file = await this.googleDriveService.uploadFile(filePath as string);
-      const downloadResponse =
-        await this.googleDriveService.generateDownloadLink(
-          file.data.id as string
-        );
-      const downloadLink = downloadResponse.data.webContentLink;
+      const fileId = file.data.id as string;
+      const newSecureFile = await this.db.createSecureFile(hashedPassCode, fileId);
       this.s.stop(`File successfully uploaded!`);
-      this.s.stop(`Download link: ${downloadLink}`);
     } catch (error) {
       this.s.stop('File upload failed!');
       console.error('Error uploading file:', error);
@@ -56,9 +62,28 @@ export default class Cli {
   }
 
   private async handleFileDownload() {
-    const enteredPasscode = await this.askPassword();
+    const enteredPasscode = await this.askPassword(
+      'Enter your passcode to get download link'
+    );
+    const files = await this.db.getAllFiles();
+    
+    let matchedFile = undefined;
 
-    if (!fileId) throw new Error('No file id found!');
+    for (const file of files) {
+      const isMatch = await this.bcrypt.comparePasscode(enteredPasscode, file.hashedPassCode);
+
+      if (isMatch) {
+        matchedFile = file;
+        break;
+      }
+    }
+
+    if (!matchedFile) {
+      note('Wrong passcode!', 'error');
+      return;
+    }
+
+    const fileId = matchedFile?.fileId;
 
     this.s.start('Downloading...');
 

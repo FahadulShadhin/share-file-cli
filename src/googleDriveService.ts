@@ -5,7 +5,7 @@ import {
   google_private_key,
   SCOPES,
 } from './variables';
-import { google } from 'googleapis';
+import { google, drive_v3 } from 'googleapis';
 import path from 'path';
 
 export default class GoogleDriveService {
@@ -19,7 +19,7 @@ export default class GoogleDriveService {
     return jwtClient;
   }
 
-  private async getDriveInstance() {
+  private async getDriveInstance(): Promise<drive_v3.Drive> {
     const auth = await this.authorize();
     return google.drive({
       version: 'v3',
@@ -27,7 +27,7 @@ export default class GoogleDriveService {
     });
   }
 
-  public async getFileMetadata(fileId: string) {
+  public async getFileMetadata(fileId: string): Promise<string | null | undefined> {
     const drive = await this.getDriveInstance();
     const response = await drive.files.get({
       fileId,
@@ -36,7 +36,7 @@ export default class GoogleDriveService {
     return response.data.name;
   }
 
-  public async uploadFile(filePath: string) {
+  public async uploadFile(filePath: string): Promise<drive_v3.Schema$File> {
     const fileName = path.basename(filePath);
     const drive = await this.getDriveInstance();
 
@@ -52,14 +52,16 @@ export default class GoogleDriveService {
       body: fs.createReadStream(filePath),
     };
 
-    return await drive.files.create({
+    const response =  await drive.files.create({
       requestBody: fileMetadata,
       media,
       fields: 'id',
     });
+
+    return response.data;
   }
 
-  public async generateDownloadLink(fileId: string) {
+  public async generateDownloadLink(fileId: string): Promise<drive_v3.Schema$File> {
     const drive = await this.getDriveInstance();
 
     await drive.permissions.create({
@@ -70,13 +72,18 @@ export default class GoogleDriveService {
       },
     });
 
-    return await drive.files.get({
+    const response =  await drive.files.get({
       fileId: fileId!,
       fields: 'webViewLink, webContentLink',
     });
+
+    return response.data;
   }
 
-  public async downloadFile(fileId: string, destinationPath: string) {
+  public async downloadFile(
+    fileId: string,
+    destinationPath: string
+  ): Promise<void> {
     const drive = await this.getDriveInstance();
     const destination = fs.createWriteStream(destinationPath);
 

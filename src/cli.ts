@@ -57,7 +57,7 @@ export default class Cli {
 
     try {
       const file = await this.googleDriveService.uploadFile(filePath as string);
-      const fileId = file.data.id as string;
+      const fileId = file.id as string;
       const newSecureFile = await this.db.createSecureFile(
         hashedPassCode,
         sharedKey,

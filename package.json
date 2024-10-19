@@ -1,16 +1,32 @@
 {
-	"name": "file-share-cli",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
+	"name": "@shadhin17/file-share-cli",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "0.0.1",
+	"description": "Secure file sharing CLI tool",
+	"main": "./dist/main.js",
+	"module": "./dist/main.mjs",
+	"types": "./dist/main.d.ts",
+	"repository": {
+		"url": "https://github.com/FahadulShadhin/file-share-cli"
+	},
+	"homepage": "https://github.com/FahadulShadhin/file-share-cli",
 	"scripts": {
 		"dev": "npx ts-node ./src/main.ts",
-		"build": "rimraf ./build && tsc",
-		"start": "npm run build && node ./build/main.js"
+		"build": "tsup",
+		"start": "npm run build && node ./dist/main.js"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"bin": {
+		"file-share": "./dist/main.js"
+	},
+	"keywords": [
+		"CLI",
+		"File sharing",
+		"Google API"
+	],
+	"author": "shadhin",
+	"license": "MIT",
 	"devDependencies": {
 		"@types/bcrypt": "^5.0.2",
 		"@types/node": "^22.7.6",
@@ -28,6 +44,7 @@
 		"bcrypt": "^5.1.1",
 		"dotenv": "^16.4.5",
 		"googleapis": "^144.0.0",
-		"prompts": "^2.4.2"
+		"prompts": "^2.4.2",
+		"tsup": "^8.3.0"
 	}
 }

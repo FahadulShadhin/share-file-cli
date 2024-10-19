@@ -6,6 +6,7 @@ import os from 'os';
 import path from 'path';
 import DBService from './dbService';
 import BCrypt from './bcrypt';
+import { generateSharedKey } from './utils';
 
 export default class Cli {
   private googleDriveService: GoogleDriveService;
@@ -40,12 +41,15 @@ export default class Cli {
     });
 
     const passcode = await this.askPassword('Set a passcode');
+    this.s.start('Generating a shared key...');
+    const sharedKey = generateSharedKey();
+    this.s.stop(`Shared key: ${sharedKey}`);
 
-    return { filePath, passcode };
+    return { filePath, passcode, sharedKey };
   }
 
   private async handleFileUpload() {
-    const { filePath, passcode } = await this.getFilePathAndPassCode();
+    const { filePath, passcode, sharedKey } = await this.getFilePathAndPassCode();
     const hashedPassCode = await this.bcrypt.hashPasscode(passcode);
 
     this.s.start('Processing file...');
@@ -53,8 +57,13 @@ export default class Cli {
     try {
       const file = await this.googleDriveService.uploadFile(filePath as string);
       const fileId = file.data.id as string;
-      const newSecureFile = await this.db.createSecureFile(hashedPassCode, fileId);
+      const newSecureFile = await this.db.createSecureFile(hashedPassCode, sharedKey, fileId);
       this.s.stop(`File successfully uploaded!`);
+
+      note(
+        `Share the passcode and shared key to the user who will download the file`,
+        'info'
+      );
     } catch (error) {
       this.s.stop('File upload failed!');
       console.error('Error uploading file:', error);
@@ -62,31 +71,45 @@ export default class Cli {
   }
 
   private async handleFileDownload() {
+    const sharedKey = await text({
+      message: 'Enter the shared key:',
+      validate: (value) => {
+        if (!value) return 'Must provide the shared key';
+      },
+    });
+
     const enteredPasscode = await this.askPassword(
       'Enter your passcode to get download link'
     );
 
     this.s.start('Varifying passcode...');
-    const files = await this.db.getAllFiles();
-    
-    let matchedFile = undefined;
+    const file = await this.db.getSecureFile(sharedKey as string);
 
-    for (const file of files) {
-      const isMatch = await this.bcrypt.comparePasscode(enteredPasscode, file.hashedPassCode);
-
-      if (isMatch) {
-        matchedFile = file;
-        break;
-      }
+    if (!file) {
+      this.s.stop('Wrong shared key!');
+      return;
     }
 
-    if (!matchedFile) {
+    const validatePassCode = await this.bcrypt.comparePasscode(enteredPasscode, file?.hashedPassCode);
+    
+    // let matchedFile = undefined;
+
+    // for (const file of files) {
+    //   const isMatch = await this.bcrypt.comparePasscode(enteredPasscode, file.hashedPassCode);
+
+    //   if (isMatch) {
+    //     matchedFile = file;
+    //     break;
+    //   }
+    // }
+
+    if (!validatePassCode) {
       this.s.stop('Wrong passcode!');
       return;
     }
     
     this.s.stop('Success!');
-    const fileId = matchedFile?.fileId;
+    const fileId = file?.fileId;
 
     this.s.start('Downloading...');
 

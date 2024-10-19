@@ -7,19 +7,20 @@ export default class DBService {
     this.prisma = new PrismaClient();
   }
 
-  async createSecureFile(hashedPassCode: string, fileId: string) {
+  async createSecureFile(hashedPassCode: string, sharedKey: string, fileId: string) {
     return await this.prisma.securefile.create({
       data: {
         hashedPassCode,
+        sharedKey,
         fileId,
       },
     });
   }
 
-  async getSecureFile(id: string) {
+  async getSecureFile(sharedKey: string) {
     return await this.prisma.securefile.findUnique({
       where: {
-        id,
+        sharedKey,
       }
     })
   }

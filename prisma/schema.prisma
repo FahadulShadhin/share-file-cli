@@ -16,5 +16,6 @@ datasource db {
 model Securefile {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
   hashedPassCode String @unique
+  sharedKey       String @unique
   fileId         String
 }

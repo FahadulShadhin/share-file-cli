@@ -87,14 +87,8 @@ export default class GoogleDriveService {
 
     return new Promise<void>((resolve, reject) => {
       res.data
-        .on('end', () => {
-          console.log('File downloaded successfully.');
-          resolve();
-        })
-        .on('error', (err: any) => {
-          console.error('Error downloading the file:', err);
-          reject(err);
-        })
+        .on('end', () => resolve())
+        .on('error', (err: any) => reject(err))
         .pipe(destination);
     });
   }

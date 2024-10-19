@@ -65,6 +65,8 @@ export default class Cli {
     const enteredPasscode = await this.askPassword(
       'Enter your passcode to get download link'
     );
+
+    this.s.start('Varifying passcode...');
     const files = await this.db.getAllFiles();
     
     let matchedFile = undefined;
@@ -79,10 +81,11 @@ export default class Cli {
     }
 
     if (!matchedFile) {
-      note('Wrong passcode!', 'error');
+      this.s.stop('Wrong passcode!');
       return;
     }
-
+    
+    this.s.stop('Success!');
     const fileId = matchedFile?.fileId;
 
     this.s.start('Downloading...');

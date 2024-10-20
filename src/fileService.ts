@@ -7,7 +7,7 @@ export default class FileService {
   private serverUrl: string;
 
   constructor() {
-    this.serverUrl = 'http://localhost:3000';
+    this.serverUrl = 'https://fs-server-0caw.onrender.com';
   }
 
   async upload(filePath: string, hashedPassCode: string, sharedKey: string) {

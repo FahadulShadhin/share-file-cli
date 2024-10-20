@@ -30,14 +30,14 @@ export default class Cli {
 
   private async getFilePathAndPassCode() {
     const filePath = await text({
-      message: 'Please enter the file path:',
+      message: 'Enter the file path:',
       validate: (value) => {
         if (!value) return 'File path cannot be empty';
         if (!fs.existsSync(value)) return 'File does not exist';
       },
     });
 
-    const passcode = await this.askPassword('Set a passcode');
+    const passcode = await this.askPassword('Set a passcode:');
     this.s.start('Generating a shared key...');
     const sharedKey = generateSharedKey();
     this.s.stop(`Shared key: ${sharedKey}`);

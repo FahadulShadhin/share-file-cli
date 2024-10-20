@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { intro, outro, text, spinner, select, note } from '@clack/prompts';
 import prompts from 'prompts';
 import os from 'os';

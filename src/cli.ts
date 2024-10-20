@@ -1,22 +1,22 @@
 import * as fs from 'fs';
 import { intro, outro, text, spinner, select, note } from '@clack/prompts';
-import GoogleDriveService from './googleDriveService';
 import prompts from 'prompts';
 import os from 'os';
 import path from 'path';
+import FileService from './fileService';
 import DBService from './dbService';
 import BCrypt from './bcrypt';
 import { generateSharedKey } from './utils';
 
 export default class Cli {
-  private googleDriveService: GoogleDriveService;
   private s: ReturnType<typeof spinner>;
+  private __fs: FileService;
   private db: DBService;
   private bcrypt: BCrypt;
 
   constructor() {
-    this.googleDriveService = new GoogleDriveService();
     this.s = spinner();
+    this.__fs = new FileService();
     this.db = new DBService();
     this.bcrypt = new BCrypt();
   }
@@ -56,13 +56,15 @@ export default class Cli {
     this.s.start('Processing file...');
 
     try {
-      const file = await this.googleDriveService.uploadFile(filePath as string);
-      const fileId = file.id as string;
+      const fileResponse = await this.__fs.upload(filePath as string);
+      const fileId = fileResponse?.fileId as string;
+
       const newSecureFile = await this.db.createSecureFile(
         hashedPassCode,
         sharedKey,
         fileId
       );
+
       this.s.stop(`File successfully uploaded!`);
 
       note(
@@ -111,14 +113,14 @@ export default class Cli {
     this.s.start('Downloading...');
 
     try {
-      const fileName = await this.googleDriveService.getFileMetadata(fileId);
-      if (!fileName) throw new Error('Could not retrieve the file name.');
-
       const downloadsFolder = path.join(os.homedir(), 'Downloads');
-      const destinationPath = path.join(downloadsFolder, fileName);
 
-      await this.googleDriveService.downloadFile(fileId, destinationPath);
-      this.s.stop(`File downloaded to: ${destinationPath}`);
+      try {
+        const filePath = await this.__fs.download(fileId, downloadsFolder);
+        this.s.stop(`File downloaded to: ${filePath}`);
+      } catch (error) {
+        throw error;
+      }
     } catch (error) {
       console.error('Error downloading file:', error);
       note('Failed to download file', 'error');

@@ -1,11 +1,10 @@
 import bcrypt from 'bcrypt';
-import { salt } from './variables';
 
 export default class BCrypt {
   private saltRounds: number;
 
   constructor(saltRounds: number = 10) {
-    this.saltRounds = salt || saltRounds;
+    this.saltRounds = saltRounds;
   }
 
   async hashPasscode(passcode: string) {

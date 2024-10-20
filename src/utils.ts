@@ -1,8 +1,5 @@
-import { chars_range } from './variables';
-
 export function generateSharedKey(length: number = 10) {
   const characters =
-    chars_range ||
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let randomKey = '';
 

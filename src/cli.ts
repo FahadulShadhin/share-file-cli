@@ -74,7 +74,7 @@ export default class Cli {
     });
 
     const enteredPasscode = await this.askPassword(
-      'Enter your passcode to get download link'
+      `Enter the passcode:`
     );
 
     this.s.start('Varifying passcode...');

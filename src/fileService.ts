@@ -10,7 +10,7 @@ export default class FileService {
     this.serverUrl = 'http://localhost:3000';
   }
 
-  async upload(filePath: string) {
+  async upload(filePath: string, hashedPassCode: string, sharedKey: string) {
     try {
       if (!fs.existsSync(filePath)) {
         throw new Error(`File not found: ${filePath}`);
@@ -19,9 +19,16 @@ export default class FileService {
       const form = new FormData();
       form.append('file', fs.createReadStream(filePath));
 
+      const additionalData = {
+        hashedPassCode,
+        sharedKey,
+      };
+
       const response = await axios.post(`${this.serverUrl}/upload`, form, {
         headers: {
           ...form.getHeaders(),
+          'Content-Type': 'multipart/form-data',
+          'x-additional-data': JSON.stringify(additionalData),
         },
       });
 
@@ -32,9 +39,17 @@ export default class FileService {
     }
   }
 
-  async download(fileId: string, destinationDir: string) {
-    const serverUrl = `${this.serverUrl}/download/${fileId}`;
+  async getSecuredFile(sharedKey: string) {
+    try {
+      const response = await axios.get(`${this.serverUrl}/file/${sharedKey}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching file:', error);
+      throw error;
+    }
+  }
 
+  async download(fileId: string, destinationDir: string, sharedKey: string) {
     try {
       if (!fs.existsSync(destinationDir)) {
         fs.mkdirSync(destinationDir, { recursive: true });
@@ -42,7 +57,7 @@ export default class FileService {
 
       const response = await axios({
         method: 'get',
-        url: serverUrl,
+        url: `${this.serverUrl}/download/${fileId}?sharedKey=${encodeURIComponent(sharedKey)}`,
         responseType: 'stream',
       });
 

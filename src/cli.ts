@@ -4,20 +4,17 @@ import prompts from 'prompts';
 import os from 'os';
 import path from 'path';
 import FileService from './fileService';
-import DBService from './dbService';
 import BCrypt from './bcrypt';
 import { generateSharedKey } from './utils';
 
 export default class Cli {
   private s: ReturnType<typeof spinner>;
   private __fs: FileService;
-  private db: DBService;
   private bcrypt: BCrypt;
 
   constructor() {
     this.s = spinner();
     this.__fs = new FileService();
-    this.db = new DBService();
     this.bcrypt = new BCrypt();
   }
 
@@ -56,17 +53,8 @@ export default class Cli {
     this.s.start('Processing file...');
 
     try {
-      const fileResponse = await this.__fs.upload(filePath as string);
-      const fileId = fileResponse?.fileId as string;
-
-      const newSecureFile = await this.db.createSecureFile(
-        hashedPassCode,
-        sharedKey,
-        fileId
-      );
-
+      const fileResponse = await this.__fs.upload(filePath as string, hashedPassCode, sharedKey);
       this.s.stop(`File successfully uploaded!`);
-
       note(
         `Share the passcode and shared key to the user who will download the file`,
         'info'
@@ -90,7 +78,8 @@ export default class Cli {
     );
 
     this.s.start('Varifying passcode...');
-    const file = await this.db.getSecureFile(sharedKey as string);
+
+    const file = await this.__fs.getSecuredFile(sharedKey as string);
 
     if (!file) {
       this.s.stop('Wrong shared key!');
@@ -116,7 +105,7 @@ export default class Cli {
       const downloadsFolder = path.join(os.homedir(), 'Downloads');
 
       try {
-        const filePath = await this.__fs.download(fileId, downloadsFolder);
+        const filePath = await this.__fs.download(fileId, downloadsFolder, sharedKey as string);
         this.s.stop(`File downloaded to: ${filePath}`);
       } catch (error) {
         throw error;

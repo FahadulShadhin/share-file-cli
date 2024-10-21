@@ -1,6 +1,8 @@
 # file-share-cli
 
-File sharing from command line
+File sharing from command line...
+
+### Use:
 
 ```bash
 npx share-files-cli

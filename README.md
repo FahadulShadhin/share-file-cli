@@ -2,6 +2,11 @@
 ![npm](https://img.shields.io/npm/v/share-files-cli.svg)
 
 File sharing from command line...
+- Set a secret passcode to share a file. A public shared key will be generated with it.
+- Share this key and the passcode with whom the file will be shared.
+- Anyone with the key and the passcode gets a one time chance to download the file.
+- Once a file is downloaded the credentials becomes invalid and all traces of the file gets destroyed to prevent another download.
+- Depends on this repo for file handling logic: https://github.com/FahadulShadhin/fs-server
 
 ### Use:
 

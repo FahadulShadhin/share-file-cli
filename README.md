@@ -13,16 +13,10 @@ File sharing from command line.
 npx share-files-cli
 ```
 
-<div>
-  <img src="./public/upload.gif" alt="Upload" width="450" style="margin-right: 10px;"/>
-  <img src="./public/download.gif" alt="Download" width="450" />
-</div>
-
-
-<!-- ### Upload:
+### Upload:
 ![Upload](./public/upload.gif)
 
 ### Download:
-![Download](./public/download.gif) -->
+![Download](./public/download.gif)
 
 <!-- https://github.com/user-attachments/assets/a140fc49-d914-468c-81f5-33eb23c2ca51 -->

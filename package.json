@@ -9,9 +9,9 @@
 	"module": "./dist/main.mjs",
 	"types": "./dist/main.d.ts",
 	"repository": {
-		"url": "https://github.com/FahadulShadhin/file-share-cli"
+		"url": "https://github.com/FahadulShadhin/share-files-cli"
 	},
-	"homepage": "https://github.com/FahadulShadhin/file-share-cli",
+	"homepage": "https://github.com/FahadulShadhin/share-files-cli",
 	"scripts": {
 		"dev": "npx ts-node ./src/main.ts",
 		"build": "tsup",
@@ -21,9 +21,9 @@
 		"file-share": "./dist/main.js"
 	},
 	"keywords": [
-		"CLI",
-		"File sharing",
-		"Google API"
+		"cli",
+		"file sharing",
+		"googleapis"
 	],
 	"author": "shadhin",
 	"license": "MIT",

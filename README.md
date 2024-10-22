@@ -1,7 +1,6 @@
 # file-share-cli
 ![npm](https://img.shields.io/npm/v/share-files-cli.svg)
 
-
 File sharing from command line...
 
 ### Use:

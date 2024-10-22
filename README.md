@@ -6,7 +6,7 @@ File sharing from command line...
 - Share this key and the passcode with whom the file will be shared.
 - Anyone with the key and the passcode gets a one time chance to download the file.
 - Once a file is downloaded the credentials become invalid and all traces of the file gets destroyed to prevent another download.
-- Depends on this repo for file handling logic: https://github.com/FahadulShadhin/fs-server
+- Depends on [this repo](https://github.com/FahadulShadhin/fs-server) for file handling logic.
 
 ### Use:
 

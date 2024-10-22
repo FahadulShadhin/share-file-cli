@@ -80,4 +80,16 @@ export default class FileService {
       throw error;
     }
   }
+
+  async deleteFile(fileId: string) {
+    try {
+      const response = await axios.delete(
+        `${this.serverUrl}/delete/${fileId}`
+      );
+      return response.status;
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      throw error;
+    }
+  }
 }

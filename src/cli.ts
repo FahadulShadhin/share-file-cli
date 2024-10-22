@@ -53,7 +53,11 @@ export default class Cli {
     this.s.start('Processing file...');
 
     try {
-      const fileResponse = await this.__fs.upload(filePath as string, hashedPassCode, sharedKey);
+      const fileResponse = await this.__fs.upload(
+        filePath as string,
+        hashedPassCode,
+        sharedKey
+      );
       this.s.stop(`File successfully uploaded!`);
       note(
         `Share the passcode and shared key to the user who will download the file`,
@@ -73,9 +77,7 @@ export default class Cli {
       },
     });
 
-    const enteredPasscode = await this.askPassword(
-      `Enter the passcode:`
-    );
+    const enteredPasscode = await this.askPassword(`Enter the passcode:`);
 
     this.s.start('Varifying passcode...');
 
@@ -105,8 +107,24 @@ export default class Cli {
       const downloadsFolder = path.join(os.homedir(), 'Downloads');
 
       try {
-        const filePath = await this.__fs.download(fileId, downloadsFolder, sharedKey as string);
+        const filePath = await this.__fs.download(
+          fileId,
+          downloadsFolder,
+          sharedKey as string
+        );
         this.s.stop(`File downloaded to: ${filePath}`);
+      } catch (error) {
+        throw error;
+      }
+
+      this.s.start('Destroying all traces of this file!');
+      try {
+        const deletedFileResponseStatus = await this.__fs.deleteFile(fileId);
+        this.s.stop(
+          deletedFileResponseStatus === 204
+            ? 'All traces of this file have been destroyed!'
+            : 'Opps!'
+        );
       } catch (error) {
         throw error;
       }

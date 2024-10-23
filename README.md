@@ -10,7 +10,7 @@ File sharing from command line.
 ### Use:
 
 ```bash
-npx share-files-cli
+npx share-file-cli
 ```
 
 ### Upload:

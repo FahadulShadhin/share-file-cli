@@ -12,8 +12,7 @@ export default class BCrypt {
       const hashedPasscode = await bcrypt.hash(passcode, this.saltRounds);
       return hashedPasscode;
     } catch (error) {
-      console.log('Error while hashing passcode:', error);
-      throw new Error('Error while hashing passcode');
+      console.error('Error while hashing passcode:', error);
     }
   }
 
@@ -22,8 +21,7 @@ export default class BCrypt {
       const match = await bcrypt.compare(passcode, hashedPasscode);
       return match;
     } catch (error) {
-      console.log('Error while verifying passcode:', error);
-      throw new Error('Error while verifying passcode');
+      console.error('Error while verifying passcode:', error);
     }
   }
 }

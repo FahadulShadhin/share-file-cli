@@ -1,4 +1,4 @@
-# share-file-cli ![npm](https://img.shields.io/npm/v/share-file-cli.svg)
+# share-file-cli ![npm](https://img.shields.io/npm/v/share-file-cli.svg) [![Publish](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml/badge.svg)](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml)
 
 File sharing from command line.
 - Set a secret passcode to share a file. A public shared key will be generated with it.

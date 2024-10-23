@@ -9,9 +9,9 @@
 	"module": "./dist/main.mjs",
 	"types": "./dist/main.d.ts",
 	"repository": {
-		"url": "https://github.com/FahadulShadhin/share-files-cli"
+		"url": "https://github.com/FahadulShadhin/share-file-cli"
 	},
-	"homepage": "https://github.com/FahadulShadhin/share-files-cli",
+	"homepage": "https://github.com/FahadulShadhin/share-file-cli",
 	"scripts": {
 		"dev": "npx ts-node ./src/main.ts",
 		"build": "tsup",

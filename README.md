@@ -14,10 +14,8 @@ File sharing from command line.
 npx share-file-cli
 ```
 
-### Upload:
-![Upload](./public/upload.gif)
+![Upload](./public/ezgif-2-76871bfdfe.gif)
 
-### Download:
-![Download](./public/download.gif)
+![Download](./public/ezgif-2-607dad51fd.gif)
 
 <!-- https://github.com/user-attachments/assets/a140fc49-d914-468c-81f5-33eb23c2ca51 -->

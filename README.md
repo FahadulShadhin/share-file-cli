@@ -1,4 +1,5 @@
-# share-file-cli ![npm](https://img.shields.io/npm/v/share-file-cli.svg) [![Publish](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml/badge.svg)](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml)
+# share-file-cli 
+![npm](https://img.shields.io/npm/v/share-file-cli.svg) [![Publish](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml/badge.svg)](https://github.com/FahadulShadhin/share-file-cli/actions/workflows/publish.yml) [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 File sharing from command line.
 - Set a secret passcode to share a file. A public shared key will be generated with it.

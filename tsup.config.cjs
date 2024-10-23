@@ -1,10 +1,10 @@
-import { defineConfig } from 'tsup'
+const { defineConfig } = require('tsup');
 
-export default defineConfig({
+module.exports = defineConfig({
   format: ['cjs', 'esm'],
   entry: ['./src/main.ts'],
   dts: true,
   shims: true,
   skipNodeModulesBundle: true,
   clean: true,
-})
+});

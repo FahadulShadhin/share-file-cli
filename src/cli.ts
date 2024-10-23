@@ -50,6 +50,11 @@ export default class Cli {
       await this.getFilePathAndPassCode();
     const hashedPassCode = await this.bcrypt.hashPasscode(passcode);
 
+    if (!hashedPassCode) {
+      this.s.stop(`Couldn't has passcode`);
+      return;
+    }
+
     this.s.start('Processing file...');
 
     try {

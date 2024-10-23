@@ -15,7 +15,7 @@
 	"scripts": {
 		"dev": "npx ts-node ./src/main.ts",
 		"build": "tsup",
-		"start": "npm run build && node ./dist/main.js",
+		"start": "pnpm run build && node ./dist/main.js",
 		"semantic-release": "semantic-release"
 	},
 	"bin": {
